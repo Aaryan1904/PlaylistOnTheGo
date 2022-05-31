@@ -10,6 +10,14 @@ win=Tk()
 #Set the geometry of Tkinter frame
 win.geometry("550x350")
 
+def readFile(test_playlist):
+        fileObj = open(test_playlist, "r") #opens the file in read mode
+        words = fileObj.read().splitlines() #puts the file into an array
+        fileObj.close()
+        return words
+
+# print(readFile("./test_playlist.txt"))
+
 def display_text(entry, label, var):
    string=entry.get()
    label.configure(text=string)
@@ -41,7 +49,7 @@ entry_dst=Entry(win, width= 40)
 entry_dst.focus_set()
 entry_dst.pack()
 
-#Create a Button to validate Entry Widget
+#Create a Button
 ttk.Button(win, text= "Submit",width= 20, command=lambda:display_text(entry_dst, label_dst, dst)).pack(pady=20)
 
 win.mainloop()
