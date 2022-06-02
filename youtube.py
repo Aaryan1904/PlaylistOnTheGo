@@ -31,10 +31,13 @@ class yt:
                 videoDuration='short',
                 maxResults=30
         )
-        response = request.execute()
-        #print(response)
-        return f"https://www.youtube.com/watch?v={response['items'][0]['id']['videoId']}"
+        try:
+            response = request.execute()
+            #print(response)
+            return f"https://www.youtube.com/watch?v={response['items'][0]['id']['videoId']}"
+        except:
+            return False
 
-test = yt("AIzaSyAOh2GpAwgyROFvfh-PLuYv2fEK6eZSFrg")
-tmp = test.search("tu jo mila")
-test.download(tmp)
+# test = yt("AIzaSyAOh2GpAwgyROFvfh-PLuYv2fEK6eZSFrg")
+# tmp = test.search("tu jo mila")
+# test.download(tmp)
