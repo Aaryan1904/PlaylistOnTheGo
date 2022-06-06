@@ -43,7 +43,7 @@ class yt:
 
     def my_hook(self, d):
         if d['status'] == 'finished':
-            self.label.configure(text= "COMPLETE")
+            pass
         if d['status'] == 'downloading':
             self.progress['value'] = int(float(d['_percent_str'][:-1]))
         self.frame.update()
