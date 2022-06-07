@@ -1,6 +1,10 @@
+from cgitb import text
 import googleapiclient.discovery
 from youtube_dl import YoutubeDL
-import time
+import os
+ydl_opts = {
+    'outtmpl': 'C:/Users/assp3/Aaryan/PlaylistOnTheGo/TestPlaylist'
+}
 
 class yt:
     def __init__(self, key: str, label, progress, frame):
@@ -12,6 +16,8 @@ class yt:
         self.client = googleapiclient.discovery.build(api_service_name, api_version, developerKey = key)
         self.progress = progress
         self.frame = frame
+        self.last_song = ""
+        self.cancel = False
 
     def download(self, link: str) -> bool:
         while True:
@@ -46,7 +52,16 @@ class yt:
             pass
         if d['status'] == 'downloading':
             self.progress['value'] = int(float(d['_percent_str'][:-1]))
+            self.last_song = d['tmpfilename']
+        # if self.cancel:
+        #     os.abort()
         self.frame.update()
+
+    def reset(self):
+        self.progress['value'] = 0
+        self.label.configure(text="Download Cancelled")
+        self.cancel = True
+        
 
 
 # test = yt("AIzaSyAOh2GpAwgyROFvfh-PLuYv2fEK6eZSFrg")

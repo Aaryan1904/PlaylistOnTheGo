@@ -1,6 +1,6 @@
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
-from youtube import yt
+import os
 
 class sp:
     def __init__(self, client_id: str, client_secret: str) -> None:
@@ -12,9 +12,10 @@ class sp:
     def getPlaylist(self, link) -> list:
         tmp = self.search.playlist(self.extractId(link), fields=None, market=None, additional_types=('track', ))
         song_list=[]
+        playlist_name=tmp['name']
         for track in tmp['tracks']['items']:
             song_list.append(track['track']['name'] + " " + track['track']['album']['name'] + " " + track['track']['album']['artists'][0]['name'])
-        return song_list
+        return song_list, playlist_name
             
     def extractId(self,link) -> str:
         tmp = link.split("/")
@@ -23,8 +24,13 @@ class sp:
         return tmp[-1]
 
         
-# test= sp("1dc31604dc65456fb345838959ef1c57", "b1f42367a6d84633867ccd9b4e522d3c")
+test= sp("1dc31604dc65456fb345838959ef1c57", "b1f42367a6d84633867ccd9b4e522d3c")
+var = test.search.playlist("14ZWFMHw5a4cIOWz5qxjPB", fields=None, market=None, additional_types=('track', ))
+playlist_name=var['name']
 
+
+if not os.path.exists(playlist_name):
+    os.makedirs(playlist_name)
 # results = test.search.search(q='The Weekend', limit=3)
 # for idx, track in enumerate(results['tracks']['items']):
 #     print(idx, track["name"])
