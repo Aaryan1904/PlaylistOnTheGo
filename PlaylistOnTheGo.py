@@ -18,14 +18,6 @@ def extractDest():
     os.chdir(filedialog.askdirectory())
     nextPage()
 
-# button_next = Button(
-#     win, 
-#     text="Next Page", 
-#     font=f,
-#     command=nextPage
-#     )
-# button_next.pack(fill=X, expand=TRUE, side=LEFT)
-
 # #Initialize a Label to display the User Input
 label_dest_hdr=Label(win, text="Select the Folder to store the song or playlist", font=("Courier 14"))
 label_dest_hdr.pack()

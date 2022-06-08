@@ -1,3 +1,5 @@
+from cgi import print_form
+from unittest import result
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import os
@@ -10,12 +12,19 @@ class sp:
                                                            client_secret=self.client_secret))
     
     def getPlaylist(self, link) -> list:
-        tmp = self.search.playlist(self.extractId(link), fields=None, market=None, additional_types=('track', ))
-        song_list=[]
-        playlist_name=tmp['name']
-        for track in tmp['tracks']['items']:
-            song_list.append(track['track']['name'] + " " + track['track']['album']['name'] + " " + track['track']['album']['artists'][0]['name'])
-        return song_list, playlist_name
+        song_list = []
+        playlist_name = ""
+        success = True
+        try:
+            tmp = self.search.playlist(self.extractId(link), fields=None, market=None, additional_types=('track', ))
+            playlist_name=tmp['name']
+            for track in tmp['tracks']['items']:
+                song_list.append(track['track']['name'] + " " + track['track']['album']['name'] + " " + track['track']['album']['artists'][0]['name'] + "Lyrical") 
+        except Exception:
+            print("Spotigy API Failure")
+            print(Exception)
+            success = False
+        return song_list, playlist_name, success
             
     def extractId(self,link) -> str:
         tmp = link.split("/")
@@ -23,44 +32,5 @@ class sp:
             return tmp[-1].split("?")[0]
         return tmp[-1]
 
-        
-test= sp("1dc31604dc65456fb345838959ef1c57", "b1f42367a6d84633867ccd9b4e522d3c")
-var = test.search.playlist("14ZWFMHw5a4cIOWz5qxjPB", fields=None, market=None, additional_types=('track', ))
-playlist_name=var['name']
 
 
-if not os.path.exists(playlist_name):
-    os.makedirs(playlist_name)
-# results = test.search.search(q='The Weekend', limit=3)
-# for idx, track in enumerate(results['tracks']['items']):
-#     print(idx, track["name"])
-
-
-
-    # print(track['track']['name'], track['track']['album']['name'], track['track']['album']['artists'][0]['name'])
-    #print(idx, track['track']['name'], track['track']['album']['name'], track['track']['album']['artists'][0]['name'])
-#print(tmp["tracks"]["items"])
-# print(song_list)
-
-# test = "https://open.spotify.com/playlist/37i9dQZF1EUMDoJuT8yJsl"
-# test = test.split("/")
-# print(test)
-# if "?" in test[-1]:
-#     print(test[-1].split("?")[0])
-# else: 
-#     print(test[-1])
-
-# playlist(playlist_id, fields=None, market=None, additional_types=('track', ))
-#     2DHKR2hBKZ8z9REgTBbNeu
-# https://open.spotify.com/playlist/14ZWFMHw5a4cIOWz5qxjPB?si=4122ebdb54284883
-#https://open.spotify.com/playlist/14ZWFMHw5a4cIOWz5qxjPB?si=50ada01ad9624ec0
-#ttps://open.spotify.com/playlist/37i9dQZF1EUMDoJuT8yJsl?si=d84de3ca09264768
-# https://open.spotify.com/playlist/37i9dQZF1EUMDoJuT8yJsl?si=43ec7add23344a2e
-# https://open.spotify.com/playlist/37i9dQZF1DX9oegrjMzKDW?si=93efde41f9da4f69
-# res: {
-#     "travkd": {
-#         "itrmd": [
-
-#         ]
-#     }
-# }

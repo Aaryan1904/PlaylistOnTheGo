@@ -1,8 +1,6 @@
 #Import the required Libraries
-from cgitb import enable
-from site import ENABLE_USER_SITE
+from tabnanny import check
 import tkinter
-from turtle import down, st
 from youtube import yt
 from tkinter import *
 from tkinter import ttk
@@ -11,9 +9,13 @@ import os
 from tkinter import filedialog
 import subprocess
 import signal
+import sys
+sys.stdout = open('PlaylistOnTheGo_log.txt', 'w')
+
 YOUTUBE_KEY=""
 SPOTIFY_CLIENT_KEY=""
 SPOTIFY_SECRET_KEY=""
+ILLIGAL_CHARS=["'","/",'"', "\\",'*','?',":", "|"]
 
 #Create an instance of Tkinter frame
 win=Tk()
@@ -25,8 +27,11 @@ win.title('PlaylistOnTheGo')
 label_progress=Label(win, text="", font=("Courier 14"))
 progress = ttk.Progressbar(win, orient = HORIZONTAL,
               length = 300, mode = 'determinate')
-downloader=yt(YOUTUBE_KEY, label_progress, progress, win)
-songs_playlist=sp(SPOTIFY_CLIENT_KEY, SPOTIFY_SECRET_KEY)
+# downloader=yt(YOUTUBE_KEY, label_progress, progress, win)
+# songs_playlist=sp(SPOTIFY_CLIENT_KEY, SPOTIFY_SECRET_KEY)
+
+downloader=yt("AIzaSyAOh2GpAwgyROFvfh-PLuYv2fEK6eZSFrg", label_progress, progress, win)
+songs_playlist=sp("1dc31604dc65456fb345838959ef1c5", "b1f42367a6d84633867ccd9b4e522d3c")
 
 def readFile(test_playlist):
         fileObj = open(test_playlist, "r") #opens the file in read mode
@@ -39,9 +44,12 @@ def extract_song(entry, label):
    button_playlist["state"] = DISABLED
    button_song["state"] = DISABLED
    song_name=entry.get()
-   link=downloader.search(song_name + " " + "lyrical")
+   if "http" in song_name or "www" in song_name:
+        link = song_name
+   else:     
+        link,check=downloader.search(song_name + " " + "lyrical")
    label.configure(text=f"Downloading {song_name}...")
-   if link:
+   if check:
         result=downloader.download(link)
    else:
         result = False
@@ -58,18 +66,29 @@ def extract_playlist(entry, label):
      button_playlist["state"] = DISABLED
      playlist_link=entry.get()
      print(playlist_link)
-     arr, playlist_name=songs_playlist.getPlaylist(playlist_link)
+     arr, playlist_name, check=songs_playlist.getPlaylist(playlist_link)
+     if check is False:
+        label.configure(text= "Download Failed...\nSounds like a you problem\nDeal with it!")
+        os.chdir('..')
+        button_song["state"] = NORMAL
+        button_playlist["state"] = NORMAL
+        return
+     for i in ILLIGAL_CHARS:
+          playlist_name = playlist_name.replace(i,"")
      if not os.path.exists(playlist_name):
+         print(playlist_name)
          os.makedirs(playlist_name)
      os.chdir('./' + playlist_name)
+     print(arr)
      for i in arr:
-          link=downloader.search(i)
+          link, check=downloader.search(i)
           label.configure(text=f"Downloading {i}...")
-          if link:
+          if check:
                result=downloader.download(link)
           else:
+               return
                result = False
-          if result:
+          if result is not False:
                label.configure(text= f"{i} Download Successful!!! ")
           else:
                label.configure(text= "Download Failed...\nSounds like a you problem\nDeal with it!")
@@ -77,12 +96,12 @@ def extract_playlist(entry, label):
      button_song["state"] = NORMAL
      button_playlist["state"] = NORMAL
 
-def cancel():
-     button_song["state"] = NORMAL
-     button_playlist["state"] = NORMAL
-     if os.path.isfile(downloader.last_song):
-          os.remove(downloader.last_song)
-     downloader.reset()
+# def cancel():
+#      button_song["state"] = NORMAL
+#      button_playlist["state"] = NORMAL
+#      downloader.reset()
+#      if os.path.isfile(downloader.last_song):
+#           os.remove(downloader.last_song)
 
 #Title
 title=Label(win, text="PlaylistOnTheGo", font=("Courier 22 bold"))
@@ -124,8 +143,9 @@ label_progress.pack()
 progress.pack(pady = 10)
 
 #Create a Button to cancel the current download
-button_cancel = Button(win, text= "Cancel",width= 20, command=cancel)
-button_cancel.pack(pady=20)
+# button_cancel = Button(win, text= "Cancel",width= 20, command=cancel)
+# button_cancel.pack(pady=20)
 
 
 win.mainloop()
+sys.stdout.close()

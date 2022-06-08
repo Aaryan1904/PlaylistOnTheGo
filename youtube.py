@@ -40,12 +40,15 @@ class yt:
                 videoDuration='short',
                 maxResults=30
         )
+        print(song)
         try:
             response = request.execute()
-            #print(response)
-            return f"https://www.youtube.com/watch?v={response['items'][0]['id']['videoId']}"
-        except:
-            return False
+            print(response)
+            return f"https://www.youtube.com/watch?v={response['items'][0]['id']['videoId']}" , True
+        except Exception:
+            print("Youtube Search Failed")
+            print(Exception)
+            return "", False
 
     def my_hook(self, d):
         if d['status'] == 'finished':
@@ -53,8 +56,8 @@ class yt:
         if d['status'] == 'downloading':
             self.progress['value'] = int(float(d['_percent_str'][:-1]))
             self.last_song = d['tmpfilename']
-        # if self.cancel:
-        #     os.abort()
+        if self.cancel:
+            os.abort()
         self.frame.update()
 
     def reset(self):
@@ -62,8 +65,3 @@ class yt:
         self.label.configure(text="Download Cancelled")
         self.cancel = True
         
-
-
-# test = yt("AIzaSyAOh2GpAwgyROFvfh-PLuYv2fEK6eZSFrg")
-# tmp = test.search("tu jo mila")
-# test.download(tmp)
