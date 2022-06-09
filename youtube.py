@@ -2,9 +2,7 @@ from cgitb import text
 import googleapiclient.discovery
 from youtube_dl import YoutubeDL
 import os
-ydl_opts = {
-    'outtmpl': 'C:/Users/assp3/Aaryan/PlaylistOnTheGo/TestPlaylist'
-}
+
 
 class yt:
     def __init__(self, key: str, label, progress, frame):
@@ -25,9 +23,9 @@ class yt:
                 print('Youtube Downloader'.center(40, '_'))
                 self.audio_downloader.extract_info(link)
 
-            except Exception:
+            except Exception as e:
                 print("Couldn\'t download the audio")
-                print(Exception)
+                print(e)
                 return False
             break
         return True
@@ -41,13 +39,14 @@ class yt:
                 maxResults=30
         )
         print(song)
+        response = ""
         try:
             response = request.execute()
-            print(response)
             return f"https://www.youtube.com/watch?v={response['items'][0]['id']['videoId']}" , True
-        except Exception:
+        except Exception as e:
             print("Youtube Search Failed")
-            print(Exception)
+            print(response)
+            print(e)
             return "", False
 
     def my_hook(self, d):

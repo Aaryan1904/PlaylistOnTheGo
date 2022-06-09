@@ -10,6 +10,7 @@ from tkinter import filedialog
 import subprocess
 import signal
 import sys
+original = sys.stdout
 sys.stdout = open('PlaylistOnTheGo_log.txt', 'w')
 
 YOUTUBE_KEY=""
@@ -21,17 +22,16 @@ ILLIGAL_CHARS=["'","/",'"', "\\",'*','?',":", "|"]
 win=Tk()
 
 #Set the geometry of Tkinter frame
-win.geometry("700x500")
+win.geometry("800x500")
 win.title('PlaylistOnTheGo')
 
 label_progress=Label(win, text="", font=("Courier 14"))
 progress = ttk.Progressbar(win, orient = HORIZONTAL,
               length = 300, mode = 'determinate')
-# downloader=yt(YOUTUBE_KEY, label_progress, progress, win)
-# songs_playlist=sp(SPOTIFY_CLIENT_KEY, SPOTIFY_SECRET_KEY)
 
-downloader=yt("AIzaSyAOh2GpAwgyROFvfh-PLuYv2fEK6eZSFrg", label_progress, progress, win)
-songs_playlist=sp("1dc31604dc65456fb345838959ef1c5", "b1f42367a6d84633867ccd9b4e522d3c")
+downloader=yt(YOUTUBE_KEY, label_progress, progress, win)
+songs_playlist=sp(SPOTIFY_CLIENT_KEY, SPOTIFY_SECRET_KEY)
+
 
 def readFile(test_playlist):
         fileObj = open(test_playlist, "r") #opens the file in read mode
@@ -44,6 +44,7 @@ def extract_song(entry, label):
    button_playlist["state"] = DISABLED
    button_song["state"] = DISABLED
    song_name=entry.get()
+   check = True
    if "http" in song_name or "www" in song_name:
         link = song_name
    else:     
@@ -65,11 +66,11 @@ def extract_playlist(entry, label):
      button_song["state"] = DISABLED
      button_playlist["state"] = DISABLED
      playlist_link=entry.get()
+     check = True
      print(playlist_link)
      arr, playlist_name, check=songs_playlist.getPlaylist(playlist_link)
      if check is False:
         label.configure(text= "Download Failed...\nSounds like a you problem\nDeal with it!")
-        os.chdir('..')
         button_song["state"] = NORMAL
         button_playlist["state"] = NORMAL
         return
@@ -79,19 +80,18 @@ def extract_playlist(entry, label):
          print(playlist_name)
          os.makedirs(playlist_name)
      os.chdir('./' + playlist_name)
-     print(arr)
      for i in arr:
           link, check=downloader.search(i)
           label.configure(text=f"Downloading {i}...")
           if check:
                result=downloader.download(link)
           else:
-               return
                result = False
           if result is not False:
                label.configure(text= f"{i} Download Successful!!! ")
           else:
                label.configure(text= "Download Failed...\nSounds like a you problem\nDeal with it!")
+               break
      os.chdir('..')
      button_song["state"] = NORMAL
      button_playlist["state"] = NORMAL
@@ -108,7 +108,7 @@ title=Label(win, text="PlaylistOnTheGo", font=("Courier 22 bold"))
 title.pack()
 
 #Initialize a Label to display the User Input
-label_song_hdr=Label(win, text="Enter Song Name", font=("Courier 20"))
+label_song_hdr=Label(win, text="Enter Song Name \n (enter exact YouTube link of \n the desired song to get accurate results)", font=("Courier 16"))
 label_song_hdr.pack()
 
 
@@ -125,7 +125,7 @@ button_song.pack(pady=20)
 label_src=Label(win, text="", font=("Courier 22 bold"))
 label_src.pack()
 
-label_playlist_hdr=Label(win, text="Enter  Spotify playlist link", font=("Courier 20"))
+label_playlist_hdr=Label(win, text="Enter  Spotify playlist link", font=("Courier 16"))
 label_playlist_hdr.pack()
 
 # #Create an Entry widget to accept User Input
@@ -148,4 +148,4 @@ progress.pack(pady = 10)
 
 
 win.mainloop()
-sys.stdout.close()
+sys.stdout = original
