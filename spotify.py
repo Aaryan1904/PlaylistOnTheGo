@@ -19,10 +19,17 @@ class sp:
         try:
             id = self.extractId(link)
             print(id)
-            tmp = self.search.playlist(id, fields=None, market=None, additional_types=('track', ))
-            playlist_name=tmp['name']
-            for track in tmp['tracks']['items']:
-                song_list.append(track['track']['name'] + " " + track['track']['album']['name'] + " " + track['track']['album']['artists'][0]['name'] + "Lyrical") 
+            if "album" in link:
+                tmp = self.search.album(id)
+                playlist_name=tmp['name']
+                for track in tmp['tracks']['items']:
+                    song_list.append(track['name'] + " " + playlist_name + " " + track['artists'][0]['name'] + " " + "Lyrical")
+                    
+            else:  
+                tmp = self.search.playlist(id, fields=None, market=None, additional_types=('track', ))
+                playlist_name=tmp['name']
+                for track in tmp['tracks']['items']:
+                    song_list.append(track['track']['name'] + " " + track['track']['album']['name'] + " " + track['track']['album']['artists'][0]['name'] + " " + "Lyrical") 
         except Exception as e:
             print("Spotify API Failure")
             print(e)
