@@ -11,7 +11,7 @@ import subprocess
 import signal
 import sys
 original = sys.stdout
-# sys.stdout = open('PlaylistOnTheGo_log.txt', 'w')
+sys.stdout = open('PlaylistOnTheGo_log.txt', 'w')
 
 YOUTUBE_KEY=""
 SPOTIFY_CLIENT_KEY=""
